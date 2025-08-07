@@ -42,7 +42,6 @@ app.post('/products', productUpload.single('image'), async (req, res) => {
     const publicId = cloudinaryResult.public_id;
 
     const product = await Product.create({
-      //owner: userId,
       name,
       price,
       category,
@@ -68,6 +67,22 @@ app.get('/products', async (req, res) => {
     console.error("Error fetching products:", err);
     res.status(500).json({ message: "Failed to fetch products" });
   }
+});
+
+//fetching by category
+// Fetching products by brand
+app.get('/products/category/:category', async (req, res) => {
+    try {
+        const { category } = req.params;
+        const products = await Product.find({ category: category });  // Fetch products by category
+        if (!products.length) {
+            return res.status(404).json({ message: `No products found for category ${category}` });
+        }
+        res.status(200).json(products);
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).json({ message: error.message });
+    }
 });
 
 //Deleting products
